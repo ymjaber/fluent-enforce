@@ -12,8 +12,8 @@
     <Description>FluentEnforce provides fluent API for handling unexpected errors with predefined validations. Features flexible custom validations through the Satisfies method, enabling clean and readable precondition checks.</Description>
     <PackageTags>fluent;enforce;validation;preconditions;error-handling;fluent-api</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/PalJaber/fluent-enforce</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/PalJaber/fluent-enforce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ymjaber/fluent-enforce</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ymjaber/fluent-enforce</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     
