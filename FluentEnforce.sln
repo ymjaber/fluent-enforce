@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7EC4EEC5-4262-46F7-8C16-15FABCA29554}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentEnforce", "src\FluentEnforce\FluentEnforce.csproj", "{AEE5CAD5-A7FF-484E-8C09-B0FD7CC45EAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F333EB0B-52D5-475A-AF23-1F554DB193F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentEnforce.Tests", "tests\FluentEnforce.Tests\FluentEnforce.Tests.csproj", "{C289222A-36AD-4053-8E71-DDA5B4AFE350}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AEE5CAD5-A7FF-484E-8C09-B0FD7CC45EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE5CAD5-A7FF-484E-8C09-B0FD7CC45EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE5CAD5-A7FF-484E-8C09-B0FD7CC45EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE5CAD5-A7FF-484E-8C09-B0FD7CC45EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C289222A-36AD-4053-8E71-DDA5B4AFE350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C289222A-36AD-4053-8E71-DDA5B4AFE350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C289222A-36AD-4053-8E71-DDA5B4AFE350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C289222A-36AD-4053-8E71-DDA5B4AFE350}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AEE5CAD5-A7FF-484E-8C09-B0FD7CC45EAC} = {7EC4EEC5-4262-46F7-8C16-15FABCA29554}
+		{C289222A-36AD-4053-8E71-DDA5B4AFE350} = {F333EB0B-52D5-475A-AF23-1F554DB193F6}
+	EndGlobalSection
+EndGlobal
