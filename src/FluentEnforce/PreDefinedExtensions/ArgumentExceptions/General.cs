@@ -24,7 +24,7 @@ public static partial class GeneralExtensions
             throw new ArgumentOutOfRangeException(message ?? "Value must be equal to the other value", enforce.ParamName);
         }
     }
-    
+
     /// <summary>
     /// Enforces that the value is not equal to the specified value.
     /// </summary>
@@ -46,5 +46,22 @@ public static partial class GeneralExtensions
         }
 
         return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the value is null.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value being validated.</typeparam>
+    /// <param name="enforce">The Enforce instance containing the value to validate.</param>
+    /// <param name="message">Optional custom error message.</param>
+    /// <exception cref="ArgumentException">Thrown when the value is not null.</exception>
+    public static void Null<TValue>(
+        this Enforce<TValue> enforce,
+        string? message = null)
+    {
+        if (enforce.Value is not null)
+        {
+            throw new ArgumentException(message ?? "Value must be null", enforce.ParamName);
+        }
     }
 }

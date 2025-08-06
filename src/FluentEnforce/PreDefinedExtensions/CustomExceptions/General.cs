@@ -24,7 +24,7 @@ public static partial class GeneralExtensions
             throw exception();
         }
     }
-    
+
     /// <summary>
     /// Enforces that the value is not equal to the specified value.
     /// </summary>
@@ -46,5 +46,22 @@ public static partial class GeneralExtensions
         }
 
         return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the value is null.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value being validated.</typeparam>
+    /// <param name="enforce">The Enforce instance containing the value to validate.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the value is not null.</exception>
+    public static void Null<TValue>(
+        this Enforce<TValue> enforce,
+        Func<Exception> exception)
+    {
+        if (enforce.Value is not null)
+        {
+            throw exception();
+        }
     }
 }

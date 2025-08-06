@@ -61,33 +61,6 @@ public class EnforceFactoryTests
         result.ParamName.Should().Be("list.Count");
     }
 
-    [Fact]
-    public void Null_WithNullValue_DoesNotThrow()
-    {
-        // Arrange
-        string? value = null;
-
-        // Act
-        var action = () => Enforce.Null(value);
-
-        // Assert
-        action.Should().NotThrow();
-    }
-
-    [Fact]
-    public void Null_WithNonNullValue_ThrowsArgumentException()
-    {
-        // Arrange
-        string value = "not null";
-
-        // Act
-        var action = () => Enforce.Null(value);
-
-        // Assert
-        action.Should().Throw<ArgumentException>()
-            .WithMessage("Value must be null*")
-            .And.ParamName.Should().Be("value");
-    }
 
     [Fact]
     public void NotNull_WithNonNullValue_ReturnsEnforceInstance()
@@ -128,7 +101,7 @@ public class EnforceFactoryTests
         var result = Enforce.NotNull(value);
 
         // Assert
-        result.Should().BeOfType<Enforce<int?>>();
+        result.Should().BeOfType<Enforce<int>>();
         result.Value.Should().Be(42);
         result.ParamName.Should().Be("value");
     }
@@ -148,13 +121,13 @@ public class EnforceFactoryTests
     }
 
     [Fact]
-    public void NotNullOrEmpty_WithNonEmptyString_ReturnsEnforceInstance()
+    public void NotNull_ThenNotEmpty_WithNonEmptyString_ReturnsEnforceInstance()
     {
         // Arrange
         const string value = "test";
 
         // Act
-        var result = Enforce.NotNullOrEmpty(value);
+        var result = Enforce.NotNull(value).NotEmpty();
 
         // Assert
         result.Should().BeOfType<Enforce<string>>();
@@ -163,43 +136,43 @@ public class EnforceFactoryTests
     }
 
     [Fact]
-    public void NotNullOrEmpty_WithEmptyString_ThrowsArgumentException()
+    public void NotNull_ThenNotEmpty_WithEmptyString_ThrowsArgumentException()
     {
         // Arrange
         const string value = "";
 
         // Act
-        var action = () => Enforce.NotNullOrEmpty(value);
+        var action = () => Enforce.NotNull(value).NotEmpty();
 
         // Assert
         action.Should().Throw<ArgumentException>()
-            .WithMessage("Value cannot be null or empty.*")
+            .WithMessage("String cannot be empty*")
             .And.ParamName.Should().Be("value");
     }
 
     [Fact]
-    public void NotNullOrEmpty_WithNullString_ThrowsArgumentException()
+    public void NotNull_WithNullString_ThrowsArgumentNullException()
     {
         // Arrange
         string? value = null;
 
         // Act
-        var action = () => Enforce.NotNullOrEmpty(value);
+        var action = () => Enforce.NotNull(value);
 
         // Assert
-        action.Should().Throw<ArgumentException>()
+        action.Should().Throw<ArgumentNullException>()
             .WithParameterName("value")
-            .WithMessage("*Value cannot be null or empty*");
+            .WithMessage("*Value cannot be null*");
     }
 
     [Fact]
-    public void NotNullOrWhiteSpace_WithNonWhiteSpaceString_ReturnsEnforceInstance()
+    public void NotNull_ThenNotWhiteSpace_WithNonWhiteSpaceString_ReturnsEnforceInstance()
     {
         // Arrange
         const string value = "test";
 
         // Act
-        var result = Enforce.NotNullOrWhiteSpace(value);
+        var result = Enforce.NotNull(value).NotWhiteSpace();
 
         // Assert
         result.Should().BeOfType<Enforce<string>>();
@@ -208,62 +181,47 @@ public class EnforceFactoryTests
     }
 
     [Fact]
-    public void NotNullOrWhiteSpace_WithWhiteSpaceString_ThrowsArgumentException()
+    public void NotNull_ThenNotWhiteSpace_WithWhiteSpaceString_ThrowsArgumentException()
     {
         // Arrange
         const string value = "   ";
 
         // Act
-        var action = () => Enforce.NotNullOrWhiteSpace(value);
+        var action = () => Enforce.NotNull(value).NotWhiteSpace();
 
         // Assert
         action.Should().Throw<ArgumentException>()
-            .WithMessage("Value cannot be null or whitespace.*")
+            .WithMessage("String cannot be empty or consist only of white-space characters*")
             .And.ParamName.Should().Be("value");
     }
 
     [Fact]
-    public void NotNullOrWhiteSpace_WithEmptyString_ThrowsArgumentException()
+    public void NotNull_ThenNotWhiteSpace_WithEmptyString_ThrowsArgumentException()
     {
         // Arrange
         const string value = "";
 
         // Act
-        var action = () => Enforce.NotNullOrWhiteSpace(value);
+        var action = () => Enforce.NotNull(value).NotWhiteSpace();
 
         // Assert
         action.Should().Throw<ArgumentException>()
-            .WithMessage("Value cannot be null or whitespace.*")
+            .WithMessage("String cannot be empty or consist only of white-space characters*")
             .And.ParamName.Should().Be("value");
     }
 
     [Fact]
-    public void NotNullOrWhiteSpace_WithNullString_ThrowsArgumentException()
-    {
-        // Arrange
-        string? value = null;
-
-        // Act
-        var action = () => Enforce.NotNullOrWhiteSpace(value);
-
-        // Assert
-        action.Should().Throw<ArgumentException>()
-            .WithParameterName("value")
-            .WithMessage("*Value cannot be null or whitespace*");
-    }
-
-    [Fact]
-    public void NotNullOrWhiteSpace_WithTabsAndNewlines_ThrowsArgumentException()
+    public void NotNull_ThenNotWhiteSpace_WithTabsAndNewlines_ThrowsArgumentException()
     {
         // Arrange
         const string value = "\t\n\r";
 
         // Act
-        var action = () => Enforce.NotNullOrWhiteSpace(value);
+        var action = () => Enforce.NotNull(value).NotWhiteSpace();
 
         // Assert
         action.Should().Throw<ArgumentException>()
-            .WithMessage("Value cannot be null or whitespace.*")
+            .WithMessage("String cannot be empty or consist only of white-space characters*")
             .And.ParamName.Should().Be("value");
     }
 

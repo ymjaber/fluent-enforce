@@ -44,6 +44,44 @@ public static partial class StringExtensions
     }
 
     /// <summary>
+    /// Enforces that the string is not empty or consists only of white-space characters.
+    /// </summary>
+    /// <param name="enforce">The <see cref="Enforce{T}"/> instance.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The <see cref="Enforce{T}"/> instance for chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string is empty or consists only of white-space characters.</exception>
+    public static Enforce<string> NotWhiteSpace(
+        this Enforce<string> enforce,
+        Func<Exception> exception)
+    {
+        if (enforce.Value.Length == 0 || enforce.Value.Trim().Length == 0)
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the string consists only of white-space characters or is empty.
+    /// </summary>
+    /// <param name="enforce">The <see cref="Enforce{T}"/> instance.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The <see cref="Enforce{T}"/> instance for chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string contains non-whitespace characters.</exception>
+    public static Enforce<string> WhiteSpace(
+        this Enforce<string> enforce,
+        Func<Exception> exception)
+    {
+        if (enforce.Value.Length > 0 && enforce.Value.Trim().Length > 0)
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
     /// Enforces that the string has exactly the specified length.
     /// </summary>
     /// <param name="enforce">The Enforce instance containing the string to validate.</param>
@@ -309,6 +347,131 @@ public static partial class StringExtensions
         Func<Exception> exception)
     {
         if (enforce.Value.EndsWith(substring))
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the string matches the specified regular expression pattern.
+    /// </summary>
+    /// <param name="enforce">The Enforce instance containing the string to validate.</param>
+    /// <param name="pattern">The regular expression pattern to match against.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The Enforce instance for method chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string does not match the pattern.</exception>
+    public static Enforce<string> Matches(
+        this Enforce<string> enforce,
+        string pattern,
+        Func<Exception> exception)
+    {
+        if (!Regex.IsMatch(enforce.Value, pattern))
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the string is a valid email address.
+    /// Uses RFC 5322 simplified pattern that handles most real-world email addresses.
+    /// Note: This validation is suitable for most use cases but may reject some valid edge cases.
+    /// </summary>
+    /// <param name="enforce">The Enforce instance containing the string to validate.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The Enforce instance for method chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string is not a valid email address.</exception>
+    public static Enforce<string> MatchesEmail(
+        this Enforce<string> enforce,
+        Func<Exception> exception)
+    {
+        if (!FluentEnforce.StringExtensions.EmailRegex().IsMatch(enforce.Value))
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the string is a valid URL.
+    /// Supports http(s), ftp(s) schemes, international domains, IPv6 addresses, and encoded characters.
+    /// </summary>
+    /// <param name="enforce">The Enforce instance containing the string to validate.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The Enforce instance for method chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string is not a valid URL.</exception>
+    public static Enforce<string> MatchesUrl(
+        this Enforce<string> enforce,
+        Func<Exception> exception)
+    {
+        if (!FluentEnforce.StringExtensions.UrlRegex().IsMatch(enforce.Value))
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the string is a valid phone number in E.164 international format.
+    /// Format: +[country code][number] where the total length is 1-15 digits.
+    /// Example: +970591234567 (Palestine), +971501234567 (UAE), +213551234567 (Algeria)
+    /// </summary>
+    /// <param name="enforce">The Enforce instance containing the string to validate.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The Enforce instance for method chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string is not a valid E.164 phone number.</exception>
+    public static Enforce<string> MatchesPhoneNumber(
+        this Enforce<string> enforce,
+        Func<Exception> exception)
+    {
+        if (!FluentEnforce.StringExtensions.PhoneNumberRegex().IsMatch(enforce.Value))
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the string is a valid GUID/UUID.
+    /// Accepts standard format with or without hyphens, and with optional braces or parentheses.
+    /// Examples: 550e8400-e29b-41d4-a716-446655440000, {550e8400-e29b-41d4-a716-446655440000}
+    /// </summary>
+    /// <param name="enforce">The Enforce instance containing the string to validate.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The Enforce instance for method chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string is not a valid GUID.</exception>
+    public static Enforce<string> MatchesGuid(
+        this Enforce<string> enforce,
+        Func<Exception> exception)
+    {
+        if (!FluentEnforce.StringExtensions.GuidRegex().IsMatch(enforce.Value))
+        {
+            throw exception();
+        }
+
+        return enforce;
+    }
+
+    /// <summary>
+    /// Enforces that the string is a valid IP address (IPv4 or IPv6).
+    /// IPv4 example: 192.168.1.1
+    /// IPv6 example: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+    /// </summary>
+    /// <param name="enforce">The Enforce instance containing the string to validate.</param>
+    /// <param name="exception">A function that returns the custom exception to throw when validation fails.</param>
+    /// <returns>The Enforce instance for method chaining.</returns>
+    /// <exception cref="Exception">Throws the custom exception returned by the exception function when the string is not a valid IP address.</exception>
+    public static Enforce<string> MatchesIpAddress(
+        this Enforce<string> enforce,
+        Func<Exception> exception)
+    {
+        if (!FluentEnforce.StringExtensions.IpAddressRegex().IsMatch(enforce.Value))
         {
             throw exception();
         }

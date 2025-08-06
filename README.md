@@ -55,15 +55,45 @@ public class UserService
 {
     public User CreateUser(string email, string password, int age)
     {
-        // Validate all parameters with fluent chains
-        Enforce.NotNullOrWhiteSpace(email)
+        // Traditional static method approach
+        Enforce.NotNull(email)
+            .NotWhiteSpace()
             .MatchesEmail();
 
-        Enforce.NotNullOrWhiteSpace(password)
+        Enforce.NotNull(password)
+            .NotWhiteSpace()
             .LongerThanOrEqualTo(8)
             .Contains("@", "Password must contain @");
 
         Enforce.That(age)
+            .GreaterThanOrEqualTo(18)
+            .LessThan(150);
+
+        return new User(email, password, age);
+    }
+}
+```
+
+### Extension Method Approach (Alternative)
+
+```csharp
+using FluentEnforce;
+
+public class UserService
+{
+    public User CreateUser(string email, string password, int age)
+    {
+        // New extension method approach - same validation, more fluent syntax
+        email.EnforceNotNull()
+            .NotWhiteSpace()
+            .MatchesEmail();
+
+        password.EnforceNotNull()
+            .NotWhiteSpace()
+            .LongerThanOrEqualTo(8)
+            .Contains("@", "Password must contain @");
+
+        age.Enforce()
             .GreaterThanOrEqualTo(18)
             .LessThan(150);
 
@@ -81,7 +111,8 @@ public class Email
 
     public Email(string value)
     {
-        Value = Enforce.NotNullOrWhiteSpace(value)
+        Value = Enforce.NotNull(value)
+            .NotWhiteSpace()
             .MatchesEmail()
             .ShorterThanOrEqualTo(255)
             .Value; // Implicit conversion returns the validated value
@@ -114,12 +145,17 @@ public class DomainException : Exception
 
 public void ValidateEmail(string email)
 {
-    // Use custom exception instead of ArgumentException
-    Enforce.That(email)
-        .Satisfies(e => !string.IsNullOrWhiteSpace(e),
-            () => new DomainException("Email is required"))
-        .Satisfies(e => e.Contains("@"),
-            () => new DomainException("Invalid email format"));
+    // Static method approach with custom exception
+    Enforce.NotNull(email, 
+        () => new DomainException("Email is required"))
+        .NotWhiteSpace(() => new DomainException("Email cannot be whitespace"))
+        .MatchesEmail(() => new DomainException("Invalid email format"));
+    
+    // OR using extension method approach
+    email.EnforceNotNull(
+        () => new DomainException("Email is required"))
+        .NotWhiteSpace(() => new DomainException("Email cannot be whitespace"))
+        .MatchesEmail(() => new DomainException("Invalid email format"));
 }
 ```
 
@@ -148,7 +184,8 @@ public class Product
 
     public Product(string name, decimal price, int stockLevel)
     {
-        Name = Enforce.NotNullOrWhiteSpace(name)
+        Name = Enforce.NotNull(name)
+            .NotWhiteSpace()
             .ShorterThanOrEqualTo(100)
             .Value;
 
@@ -172,15 +209,18 @@ public IActionResult CreateAccount([FromBody] CreateAccountRequest request)
 {
     Enforce.NotNull(request);
 
-    Enforce.NotNullOrWhiteSpace(request.Username)
+    Enforce.NotNull(request.Username)
+        .NotWhiteSpace()
         .LongerThanOrEqualTo(3)
         .ShorterThanOrEqualTo(20)
         .Matches("^[a-zA-Z0-9_]+$", "Username can only contain letters, numbers, and underscores");
 
-    Enforce.NotNullOrWhiteSpace(request.Email)
+    Enforce.NotNull(request.Email)
+        .NotWhiteSpace()
         .MatchesEmail();
 
-    Enforce.NotNullOrWhiteSpace(request.Password)
+    Enforce.NotNull(request.Password)
+        .NotWhiteSpace()
         .LongerThanOrEqualTo(8)
         .Matches("[A-Z]", "Password must contain uppercase letter")
         .Matches("[0-9]", "Password must contain number");
@@ -205,6 +245,38 @@ public void ProcessItems<T>(IEnumerable<T> items, int batchSize)
     // Process items in batches
 }
 ```
+
+## Extension Methods vs Static Methods
+
+FluentEnforce offers two equivalent approaches for validation:
+
+### Static Method Approach (Traditional)
+```csharp
+// Null checking
+Enforce.NotNull(customer);
+Enforce.NotNull(email).NotWhiteSpace();
+
+// General validation
+Enforce.That(age).GreaterThan(18);
+```
+
+### Extension Method Approach (Alternative)
+```csharp
+// Null checking with compile-time safety
+customer.EnforceNotNull();
+email.EnforceNotNull().NotWhiteSpace();
+
+// General validation
+age.Enforce().GreaterThan(18);
+```
+
+Both approaches:
+- ✅ Provide the same validation functionality
+- ✅ Support custom exceptions
+- ✅ Preserve null-safety with `[NotNull]` attributes
+- ✅ Have identical performance
+
+Choose based on your team's preference and coding style.
 
 ## Predefined Validations
 
@@ -251,7 +323,7 @@ FluentEnforce provides extensive built-in validations:
     public void ProcessData(string input, int count)
     {
         // Validate at method entry
-        Enforce.NotNullOrWhiteSpace(input);
+        Enforce.NotNull(input).NotWhiteSpace();
         Enforce.That(count).Positive();
 
         // Now safe to use parameters
@@ -269,7 +341,8 @@ FluentEnforce provides extensive built-in validations:
 3. **Chain Related Validations**
 
     ```csharp
-    Enforce.NotNullOrWhiteSpace(email)
+    Enforce.NotNull(email)
+        .NotWhiteSpace()
         .MatchesEmail()
         .NotContain("tempmail", "Temporary emails not allowed")
         .ShorterThanOrEqualTo(255);
@@ -300,6 +373,46 @@ FluentEnforce is designed for high performance:
 - Predefined regex patterns are compiled and cached
 - No allocations for successful validations
 - Minimal overhead compared to manual if-throw statements
+
+## International Validation Considerations
+
+FluentEnforce's validation methods are designed with international use in mind:
+
+### Email Validation (`MatchesEmail()`)
+- Based on simplified RFC 5322 pattern
+- Supports international domains and longer TLDs (.international, .technology)
+- Handles common special characters in email addresses
+- **Note**: Some valid but rare email formats may be rejected
+
+### URL Validation (`MatchesUrl()`)
+- Supports `http`, `https`, `ftp`, and `ftps` schemes
+- Handles IPv6 addresses and percent-encoded characters
+- Supports international domain names (IDN) in ASCII format
+- **Note**: URLs must be properly encoded; raw Unicode domains should be converted to Punycode
+
+### Phone Number Validation (`MatchesPhoneNumber()`)
+- Uses E.164 international format: `+[country code][number]`
+- Accepts 1-15 digits with optional `+` prefix
+- Examples: `+970591234567` (Palestine), `+971501234567` (UAE), `+962791234567` (Jordan)
+- **Note**: Does not validate country-specific formats or number portability
+
+### IP Address Validation (`MatchesIpAddress()`)
+- Supports both IPv4 and IPv6 formats
+- Handles compressed IPv6 notation and IPv4-mapped IPv6 addresses
+- Examples: `192.168.1.1`, `2001:db8::8a2e:370:7334`
+
+### GUID Validation (`MatchesGuid()`)
+- Accepts standard GUID formats with or without hyphens
+- Supports optional braces `{}` or parentheses `()`
+- Case-insensitive validation
+
+### Best Practices for International Applications
+
+1. **Always document expected formats** in your API documentation
+2. **Consider locale-specific validation** for user-facing applications
+3. **Use E.164 format** for phone numbers in databases
+4. **Normalize URLs** before validation when dealing with IDN
+5. **Provide clear error messages** indicating the expected format
 
 ## Real-World Example
 
